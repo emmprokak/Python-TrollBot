@@ -3,10 +3,15 @@ Created by MNS, Summer 2023
 Dedicated to my friends with the intention of wreaking havoc in our discord servers.
 """
 
+
 import random as r
-from RandomnessUtil import isYourLuckyDay, getNewReplyIdxExcludingPrevious, callBasedOnChance
+
+from Context import Context
+from RandUtil import isYourLuckyDay, getNewReplyIdxExcludingPrevious, callBasedOnChance
 from DataConfig import DataConfig
 from Settings import Settings
+from helperFunctions import isCustomFeatureEnabled
+
 
 def getFakeIPAddress():
     minRange = 0
@@ -33,9 +38,38 @@ def getFamilySwearReply():
     return replyText
 
 
-def getUserMessageResponse(userMessage):
+def getUserMessageResponse(userMessage, senderUser):
     if "your mom" in userMessage:
         return getFamilySwearReply()
 
+    if isCustomFeatureEnabled(DataConfig.CUSTOM_FEATURE_TARGETED_BULLYING) and Context.targetedPersonName == senderUser.name:
+        return callBasedOnChance(100, getNoSwearingReply)
+
     if any(word in userMessage for word in DataConfig.getCommonSwearWordList()):
         return callBasedOnChance(Settings.RESPOND_SWEAR_MESSAGE_PROBABILITY, getNoSwearingReply)
+
+
+def getRoleReply(roleName):
+    replies = DataConfig.getRolesReplies(roleName)
+    return replies[getNewReplyIdxExcludingPrevious(replies, DataConfig.ROLE_REACTION)]
+
+
+def getSongRequestResponse():
+    replies = DataConfig.getSongRequestReplies()
+    return replies[getNewReplyIdxExcludingPrevious(replies, DataConfig.SONG_REQUEST_REACTION)]
+
+def getBotReplyResponse():
+    replies = DataConfig.getBotReplies()
+    return replies[getNewReplyIdxExcludingPrevious(replies, DataConfig.BOT_REACTION)]
+
+def getMentionUserReply():
+    replies = DataConfig.getMentionUserReplies()
+    return replies[getNewReplyIdxExcludingPrevious(replies, DataConfig.MENTION_USER)]
+
+def getNicknameReply():
+    replies = DataConfig.getNicknameReplies()
+    return replies[getNewReplyIdxExcludingPrevious(replies, DataConfig.NICKNAME_USER)]
+
+def getNicknameForUser():
+    replies = DataConfig.getActualNicknames()
+    return replies[getNewReplyIdxExcludingPrevious(replies, DataConfig.NICKNAMES_AVAILABLE)]

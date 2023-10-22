@@ -5,10 +5,11 @@ Dedicated to my friends with the intention of wreaking havoc in our discord serv
 
 class LimitedPositionQueue:
     data = []
-    keepLastUsedExpressionCount = 10
+    keepLastUsedExpressionCount = 15
 
-    def __init__(self):
-        pass
+    def __init__(self, keepLastCount):
+        if keepLastCount:
+            self.keepLastUsedExpressionCount = keepLastCount
 
     def add(self, idx):
         if len(self.data) >= self.keepLastUsedExpressionCount:

@@ -9,6 +9,7 @@ from LimitedPositionQueue import LimitedPositionQueue
 from Context import Context
 from DataConfig import DataConfig
 from Settings import Settings
+# from helperFunctions import isCustomFeatureEnabled
 
 
 def isYourLuckyDay(perc):
@@ -54,7 +55,7 @@ def isTimeForVoiceFun():
     multiplier = 1 + Context.nonExecutedTrollCount / 10
     Context.nonExecutedTrollCount = 0
 
-    print(f"mult = {multiplier}")
+    print(f"checking trolling probability")
     if 17 < hour < 21:
         return isYourLuckyDay(Settings.EARRAPE_AFTERNOON_PROBABILITY * multiplier)
     elif 21 < hour <= 23:
@@ -65,4 +66,26 @@ def isTimeForVoiceFun():
         return isYourLuckyDay(Settings.EARRAPE_MORNING_NOON_PROBABILITY * multiplier)
 
 def checkDeafenMuteTime(voiceChannel):
-    return len(voiceChannel.members) >= Settings.REQUIRED_MEMBERS_FOR_DEAFEN_MUTE and isYourLuckyDay(Settings.DEAFEN_MUTE_PROBABILITY)
+    return len(voiceChannel.members) >= Settings.REQUIRED_MEMBERS_FOR_DEAFEN_MUTE and \
+           isYourLuckyDay(Settings.DEAFEN_MUTE_PROBABILITY) and \
+           Context.customFeatures[DataConfig.CUSTOM_FEATURE_DEAFEN_MUTE]
+
+def isTimeForBotResponse():
+    return isYourLuckyDay(Settings.RESPOND_TO_OTHER_BOT_PROBABILITY)
+
+def checkMentionSwearingUser(username, timesSweared):
+    print(f"check mention for {username}")
+    return timesSweared is not None and timesSweared > 5 and \
+           isYourLuckyDay(Settings.MENTION_SWEARING_USER_PROBABILITY)
+
+def timeForTargetedVoiceKick():
+    return isYourLuckyDay(Settings.TARGET_BULLYING_VOICE_KICK_PROBABILITY)
+
+def timeForMixChannels():
+    return isYourLuckyDay(Settings.MIX_CHANNELS_PROBABILITY)
+
+def getRandomElementOfList(inputList):
+    if not isinstance(inputList, list) or len(inputList) <= 0:
+        return None
+
+    return inputList[r.randint(0, len(inputList) - 1)]

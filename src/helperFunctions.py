@@ -4,7 +4,8 @@ Dedicated to my friends with the intention of wreaking havoc in our discord serv
 """
 
 from DataConfig import DataConfig
-from RandomnessUtil import checkDeafenMuteTime
+from RandUtil import checkDeafenMuteTime
+from Context import Context
 
 def validateCommandUser(username):
     return username in DataConfig.commandUsers
@@ -42,5 +43,19 @@ def getSoundUrlByUserInput(action, localSound = False):
 
 def isMalakaMessage(w):
     wLowerCase = w.lower()
-    malakaWordList = ["malaka", "μαλάκα", "μαλακα"]
+    malakaWordList = ["malaka", "μαλάκα", "μαλακα", "mlk", "μλκ"]
     return any([malakaWord in wLowerCase for malakaWord in malakaWordList])
+
+def getProperRole(userRoles):
+    for role in userRoles:
+        if "everyone" not in role.name:
+            return role
+
+    return DataConfig.EMPTY_STRING
+
+def getMostSwearingUser():
+    return sorted(Context.peopleThatSwear.items(), key=lambda x: x[1], reverse=True)[0] \
+        if len(Context.peopleThatSwear.items()) >= 1 else (None, None)
+
+def isCustomFeatureEnabled(featureName):
+    return Context.customFeatures[featureName]
